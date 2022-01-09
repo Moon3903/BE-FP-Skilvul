@@ -109,5 +109,33 @@ module.exports = {
         return result;
       },
     },
+    getDocumentation: {
+      responseMessage: "success get documentation",
+      method: "get",
+      path: "/:id/dokumentasi",
+      handler: async (ctx) => {
+        const result = await repository.getDocumentation(Number(ctx.payload.params.id));
+        if (!result) {
+          throw new Error("id not exist");
+        }
+
+        console.log(result);
+
+        return result[0];
+      },
+    },
+    addDoc: {
+      method: "post",
+      path: "/:id/dokumentasi",
+      // authentication: true,
+      // authorization: ["admin", "superadmin","moderator"],
+      responseMessage: "success add event documentation",
+      handler: async (ctx) => {
+        const payload = ctx.payload.body;
+        console.log(payload);
+        const result = await repository.createDocumentation(payload);
+        return result;
+      },
+    },
   },
 };

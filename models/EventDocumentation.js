@@ -1,22 +1,18 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Events extends Model {
+  class EventDocumentation extends Model {
     /**
      * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
+     * This method is not a part of sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.participants, {
-        through: "participants_points",
-        foreignKey: "eventId",
-      });
-      this.hasOne(models.users, { foreignKey: "id" });
+      this.hasOne(models.events, { foreignKey: "id" });
     }
   }
-  Events.init(
+  EventDocumentation.init(
     {
       id: {
         allowNull: false,
@@ -24,50 +20,35 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.DATE,
-      },
-      thumbnail: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      location: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      userId: {
+      eventId: {
         type: DataTypes.INTEGER,
         references: {
-          model: "users",
+          model: "events",
           key: "id",
         },
         allowNull: false,
         foreignKey: true,
       },
+      documentation: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW
       },
       updatedAt: {
         allowNull: false,
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        updatedAt: DataTypes.NOW,
+        updatedAt: DataTypes.NOW
       },
     },
     {
       sequelize,
-      modelName: "events",
+      modelName: "event_documentations",
     }
   );
-  return Events;
+  return EventDocumentation;
 };
