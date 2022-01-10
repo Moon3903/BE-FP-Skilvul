@@ -2,17 +2,17 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("event_documentation", {
+    await queryInterface.createTable("event_documentations", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      participantId: {
+      eventId: {
         type: Sequelize.INTEGER,
         references: {
-          model: "participants",
+          model: "events",
           key: "id",
         },
         allowNull: false,
@@ -21,10 +21,21 @@ module.exports = {
       documentation: {
         type: Sequelize.TEXT,
         allowNull: false,
-      }
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+        updatedAt: Sequelize.NOW
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("event_documentation");
+    await queryInterface.dropTable("event_documentations");
   },
 };

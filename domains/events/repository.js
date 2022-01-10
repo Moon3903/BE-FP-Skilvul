@@ -16,6 +16,15 @@ module.exports = {
     });
     return result;
   },
+  getDocumentation: async(id)=>{
+    tmp = "SELECT * FROM event_documentations WHERE eventId = " + id;
+    const result = await db.sequelize.query(tmp);
+    return result;
+  },
+  createDocumentation: async(payload)=>{
+    const result = await db.event_documentations.create(payload);
+    return result;
+  },
   create: async (payload) => {
     const result = await db.events.create(payload);
     return result;
