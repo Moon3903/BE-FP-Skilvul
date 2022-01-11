@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.hasOne(models.participants, {foreignKey: "id"});
+      this.hasOne(models.events, {foreignKey: "id"});
     }
   }
   ParticipantPoint.init(

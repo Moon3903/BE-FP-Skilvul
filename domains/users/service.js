@@ -20,6 +20,7 @@ module.exports = {
         const payload = {
           email: ctx.payload.body.email,
           password: bcrypt.hashSync(ctx.payload.body.password, 8),
+          name: ctx.payload.body.name,
         };
         const { roles: roleIds } = ctx.payload.body;
         const roles = [];
@@ -37,7 +38,7 @@ module.exports = {
         await result.addRole(roles);
 
         // parse response
-        return { id: result.id, email: result.email, roles };
+        return { id: result.id, email: result.email, roles, name: result.name };
       },
     },
     login: {
@@ -71,7 +72,7 @@ module.exports = {
       method: "put",
       path: "/:id",
       authentication: true,
-      authorization: ["superadmin","admin","moderator"],
+      authorization: ["superadmin"],
       handler: async (ctx) => {
         let payload = ctx.payload.body;
         const user = ctx.user;
@@ -80,13 +81,10 @@ module.exports = {
         }
         console.log(user);
 
-        if(ctx.payload.params.id != user.dataValues.id){
-          throw new Error("Cant edit other people permission")
+        if (ctx.payload.params.id != user.dataValues.id) {
+          throw new Error("Cant edit other people permission");
         }
-        const result = await repository.edit(
-          user.dataValues.id,
-          payload
-        );
+        const result = await repository.edit(user.dataValues.id, payload);
         if (result == null) {
           throw new Error("id not exist");
         }
@@ -108,7 +106,7 @@ module.exports = {
       },
     },
     getAll: {
-      responseMessage: "success get data event",
+      responseMessage: "success get user event",
       method: "get",
       path: "/",
       authentication: true,
@@ -120,7 +118,26 @@ module.exports = {
         const result = event.map((o) => ({
           id: o.id,
           email: o.email,
+          name: o.name,
         }));
+
+        return result;
+      },
+    },
+    getById: {
+      responseMessage: "success get data event",
+      method: "get",
+      path: "/:id",
+      authentication: true,
+      authorization: ["superadmin"],
+      handler: async (ctx) => {
+        const getUser = await repository.getById(Number(ctx.payload.params.id));
+
+        const result = {
+          id: getUser.id,
+          email: getUser.email,
+          name: getUser.name,
+        };
 
         return result;
       },
