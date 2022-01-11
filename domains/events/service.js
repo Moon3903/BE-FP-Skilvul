@@ -1,5 +1,6 @@
 const common = require("../../mixins/common");
 const repository = require("./repository");
+const userRepository = require("../users/repository");
 
 function compare(a, b) {
   if (a.point > b.point) return -1;
@@ -10,6 +11,29 @@ module.exports = {
   name: "events",
   mixins: [common],
   actions: {
+    getAllLeaderboard: {
+      method: "get",
+      path: "/leaderboard",
+      responseMessage: "success get leaderboard",
+      handler: async (ctx) => {
+        console.log("<<<<<<<<<<<<<<><><><>>>>>>>\n,,,,,,,,.,.,.,.,")
+        const result = await repository.getLeaderboard();
+        console.log(result);
+        return result[0];
+      },
+    },
+    getLeaderboardEvent: {
+      method: "get",
+      path: "/:id/leaderboard",
+      responseMessage: "success get leaderboard",
+      handler: async (ctx) => {
+        const result = await repository.getEventLeaderboard(
+          Number(ctx.payload.params.id)
+        );
+        console.log(result);
+        return result[0];
+      },
+    },
     add: {
       method: "post",
       path: "/",
@@ -24,6 +48,7 @@ module.exports = {
           ...payload,
           userId: user.dataValues.id,
         };
+        console.log(newPayload);
         const result = await repository.create(newPayload);
         return result;
       },
@@ -70,7 +95,7 @@ module.exports = {
           throw new Error("id not exist");
         }
 
-        console.log(event);
+        console.log(event.userId);
 
         const participants = event.participants.map((o) => ({
           id: o.id,
@@ -80,12 +105,19 @@ module.exports = {
 
         participants.sort(compare);
 
+        const user = await userRepository.getById(event.userId);
+
+        console.log(user);
+
         const result = {
           id: event.id,
           name: event.name,
           date: event.date,
-          creted_by: event.user,
-          leaderboard: participants.slice(0, 3),
+          creted_by: {
+            email: user.email,
+            name: user.name,
+          },
+          leaderboard: participants,
         };
 
         return result;
@@ -99,11 +131,15 @@ module.exports = {
         const payload = ctx.payload.body;
         const event = await repository.get(payload);
 
+        const users = await userRepository.get();
         const result = event.map((o) => ({
           id: o.id,
           name: o.name,
           date: o.date,
-          created_by: o.user,
+          creted_by: {
+            email: users[o.userId].email,
+            name: users[o.userId].name,
+          }
         }));
 
         return result;
@@ -112,9 +148,11 @@ module.exports = {
     getDocumentation: {
       responseMessage: "success get documentation",
       method: "get",
-      path: "/:id/dokumentasi",
+      path: "/:id/documentation",
       handler: async (ctx) => {
-        const result = await repository.getDocumentation(Number(ctx.payload.params.id));
+        const result = await repository.getDocumentation(
+          Number(ctx.payload.params.id)
+        );
         if (!result) {
           throw new Error("id not exist");
         }
@@ -126,14 +164,13 @@ module.exports = {
     },
     addDoc: {
       method: "post",
-      path: "/:id/dokumentasi",
-      // authentication: true,
-      // authorization: ["admin", "superadmin","moderator"],
+      path: "/:id/documentation",
+      authentication: true,
+      authorization: ["admin", "superadmin", "moderator"],
       responseMessage: "success add event documentation",
       handler: async (ctx) => {
         const payload = ctx.payload.body;
-        console.log(payload);
-        const result = await repository.createDocumentation(payload);
+        const result = await repository.createDocumentation(payload,Number(ctx.payload.params.id));
         return result;
       },
     },

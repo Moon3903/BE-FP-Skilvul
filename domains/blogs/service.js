@@ -1,6 +1,6 @@
 const common = require("../../mixins/common");
 const repository = require("./repository");
-
+const userRepository = require("../users/repository");
 
 module.exports = {
     name: "blogs",
@@ -35,12 +35,20 @@ module.exports = {
             responseMessage: "success get data Blogs",
             method: "get",
             path: "/:id",
-            handler: (ctx) => {
-                const berita = repository.getById(Number(ctx.payload.params.id));
+            handler: async (ctx) => {
+                const berita = await repository.getById(Number(ctx.payload.params.id));
                 if (!berita) {
                     throw new Error("id not exist");
                 }
-                return berita;
+                const user = await userRepository.getById(berita.userId);
+                const result = {
+                    ...berita,
+                    createdBy: {
+                        email: user.email,
+                        name: user.name
+                    }
+                }
+                return result;
             },
         },
         updateById: {
