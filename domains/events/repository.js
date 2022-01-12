@@ -24,12 +24,12 @@ module.exports = {
   },
   getLeaderboard: async () => {
     tmp =
-      "SELECT p.id as id,p.email as email,SUM(pp.point) AS point FROM participants p INNER JOIN participants_points pp ON pp.participantId = p.id GROUP BY participantId ORDER BY Point desc";
+      "SELECT p.id as id,p.email as email,p.name as name,p.picture as picture,SUM(pp.point) AS point FROM participants p INNER JOIN participants_points pp ON pp.participantId = p.id GROUP BY participantId ORDER BY Point desc";
     const result = await db.sequelize.query(tmp);
     return result;
   },
   getEventLeaderboard: async (id) => {
-    tmp = `SELECT p.id as id,p.email as email,SUM(pp.point) AS point FROM participants p INNER JOIN (SELECT * FROM participants_points WHERE eventId=${id}) pp ON pp.participantId = p.id GROUP BY participantId ORDER BY Point desc`;
+    tmp = `SELECT p.id as id,p.email as email,p.name as name,p.picture as picture,SUM(pp.point) AS point FROM participants p INNER JOIN (SELECT * FROM participants_points WHERE eventId=${id}) pp ON pp.participantId = p.id GROUP BY participantId ORDER BY Point desc`;
     const result = await db.sequelize.query(tmp);
     return result;
   },

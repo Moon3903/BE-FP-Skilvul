@@ -97,13 +97,17 @@ module.exports = {
 
         console.log(event.userId);
 
-        const participants = event.participants.map((o) => ({
-          id: o.id,
-          email: o.email,
-          point: o.participants_points.point,
-        }));
+        // const participants = event.participants.map((o) => ({
+        //   id: o.id,
+        //   email: o.email,
+        //   name: o.name,
+        //   picture: o.picture,
+        //   point: o.participants_points.point,
+        // }));
 
-        participants.sort(compare);
+        // participants.sort(compare);
+
+        const participants = await repository.getEventLeaderboard(Number(ctx.payload.params.id));
 
         const user = await userRepository.getById(event.userId);
 
@@ -117,7 +121,7 @@ module.exports = {
             email: user.email,
             name: user.name,
           },
-          leaderboard: participants,
+          leaderboard: participants[0],
         };
 
         return result;
