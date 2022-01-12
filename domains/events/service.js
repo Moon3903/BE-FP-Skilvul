@@ -136,6 +136,9 @@ module.exports = {
           id: o.id,
           name: o.name,
           date: o.date,
+          thumbnail: o.thumbnail,
+          location : o.location,
+          description: o.description,
           creted_by: {
             email: users[o.userId].email,
             name: users[o.userId].name,
