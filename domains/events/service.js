@@ -117,6 +117,9 @@ module.exports = {
           id: event.id,
           name: event.name,
           date: event.date,
+          thumbnail: o.thumbnail,
+          location : o.location,
+          description: o.description,
           creted_by: {
             email: user.email,
             name: user.name,
