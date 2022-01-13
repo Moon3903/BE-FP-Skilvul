@@ -81,9 +81,6 @@ module.exports = {
         }
         console.log(user);
 
-        if (ctx.payload.params.id != user.dataValues.id) {
-          throw new Error("Cant edit other people permission");
-        }
         const result = await repository.edit(user.dataValues.id, payload);
         if (result == null) {
           throw new Error("id not exist");
